@@ -1,0 +1,94 @@
+{
+  "patterns": {
+    "vlan_creation": {
+      "intent_type": "vlan",
+      "required_parameters": ["vlan_id", "vlan_name"],
+      "cli_template": [
+        "vlan {vlan_id}",
+        " name {vlan_name}",
+        "exit"
+      ]
+    },
+    "vlan_access_port": {
+      "intent_type": "vlan_interface",
+      "required_parameters": ["interface", "vlan_id"],
+      "cli_template": [
+        "interface {interface}",
+        " switchport mode access",
+        " switchport access vlan {vlan_id}",
+        " no shutdown",
+        "exit"
+      ]
+    },
+    "vlan_trunk_port": {
+      "intent_type": "trunk",
+      "required_parameters": ["interface", "allowed_vlans"],
+      "cli_template": [
+        "interface {interface}",
+        " switchport trunk encapsulation dot1q",
+        " switchport mode trunk",
+        " switchport trunk allowed vlan {allowed_vlans}",
+        " no shutdown",
+        "exit"
+      ]
+    },
+    "interface_ip": {
+      "intent_type": "interface_ip",
+      "required_parameters": ["interface", "ip_address", "subnet_mask"],
+      "cli_template": [
+        "interface {interface}",
+        " ip address {ip_address} {subnet_mask}",
+        " no shutdown",
+        "exit"
+      ]
+    },
+    "svi_gateway": {
+      "intent_type": "svi_routing",
+      "required_parameters": ["vlan_id", "ip_address", "subnet_mask"],
+      "cli_template": [
+        "ip routing",
+        "interface Vlan{vlan_id}",
+        " ip address {ip_address} {subnet_mask}",
+        " no shutdown",
+        "exit"
+      ]
+    },
+    "static_route": {
+      "intent_type": "routing_static",
+      "required_parameters": ["destination_net", "subnet_mask", "next_hop"],
+      "cli_template": [
+        "ip route {destination_net} {subnet_mask} {next_hop}"
+      ]
+    },
+    "ospf_single_area": {
+      "intent_type": "routing_ospf",
+      "required_parameters": ["process_id", "network_ip", "wildcard_mask", "area_id"],
+      "cli_template": [
+        "router ospf {process_id}",
+        " network {network_ip} {wildcard_mask} area {area_id}",
+        "exit"
+      ]
+    },
+    "dhcp_pool": {
+      "intent_type": "dhcp",
+      "required_parameters": ["pool_name", "network_ip", "subnet_mask", "default_router"],
+      "cli_template": [
+        "ip dhcp pool {pool_name}",
+        " network {network_ip} {subnet_mask}",
+        " default-router {default_router}",
+        " dns-server {dns_server}",
+        "exit"
+      ]
+    },
+    "acl_traffic_filter": {
+      "intent_type": "security_acl",
+      "required_parameters": ["acl_id", "action", "protocol", "src_ip", "src_wildcard", "dst_ip", "dst_wildcard"],
+      "cli_template": [
+        "access-list {acl_id} {action} {protocol} {src_ip} {src_wildcard} {dst_ip} {dst_wildcard} eq {port}",
+        "interface {apply_interface}",
+        " ip access-group {acl_id} {direction}",
+        "exit"
+      ]
+    }
+  }
+}

@@ -1,0 +1,17 @@
+! ==========================================================
+! CISCO PACKET TRACER AUTOMATION SCRIPT
+! Target Device: Switch1
+! Scenario: VLAN_Switch1
+! Instructions: Open Packet Tracer -> Click Device -> CLI -> Paste
+! ==========================================================
+enable
+configure terminal
+hostname Switch1
+vlan 10
+ name DEPT_10
+exit
+end
+write memory
+end
+write memory
+show running-config

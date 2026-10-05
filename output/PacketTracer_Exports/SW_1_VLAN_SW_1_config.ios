@@ -1,0 +1,22 @@
+! ==========================================================
+! CISCO PACKET TRACER AUTOMATION SCRIPT
+! Target Device: SW_1
+! Scenario: VLAN_SW_1
+! Instructions: Open Packet Tracer -> Click Device -> CLI -> Paste
+! ==========================================================
+enable
+configure terminal
+hostname SW_1
+vlan 90
+ name Finance
+exit
+interface FastEthernet0/19
+ switchport mode access
+ switchport access vlan 90
+ no shutdown
+exit
+end
+write memory
+end
+write memory
+show running-config

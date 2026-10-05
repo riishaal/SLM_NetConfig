@@ -1,0 +1,15 @@
+! ==========================================================
+! CISCO PACKET TRACER AUTOMATION SCRIPT
+! Target Device: Switch1
+! Scenario: ROUTING_STATIC_Switch1
+! Instructions: Open Packet Tracer -> Click Device -> CLI -> Paste
+! ==========================================================
+enable
+configure terminal
+hostname Switch1
+ip route 10.1.0.0 255.255.0.0 192.168.1.254
+end
+write memory
+end
+write memory
+show running-config

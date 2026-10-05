@@ -1,0 +1,19 @@
+! ==========================================================
+! CISCO PACKET TRACER AUTOMATION SCRIPT
+! Target Device: Switch1
+! Scenario: SECURITY_ACL_Switch1
+! Instructions: Open Packet Tracer -> Click Device -> CLI -> Paste
+! ==========================================================
+enable
+configure terminal
+hostname Switch1
+access-list 101 deny tcp 192.168.10.0 0.0.0.255 any eq 80
+access-list 101 permit ip any any
+interface GigabitEthernet0/1
+ ip access-group 101 in
+exit
+end
+write memory
+end
+write memory
+show running-config

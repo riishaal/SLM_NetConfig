@@ -1,0 +1,20 @@
+! ==========================================================
+! CISCO PACKET TRACER AUTOMATION SCRIPT
+! Target Device: SW_10
+! Scenario: VLAN_TRUNK_SW_10
+! Instructions: Open Packet Tracer -> Click Device -> CLI -> Paste
+! ==========================================================
+enable
+configure terminal
+hostname SW_10
+interface GigabitEthernet0/6
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20,30
+ no shutdown
+exit
+end
+write memory
+end
+write memory
+show running-config

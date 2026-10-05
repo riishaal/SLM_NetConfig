@@ -1,0 +1,73 @@
+{
+  "ip_rules": {
+    "private_ranges": [
+      { "class": "A", "cidr": "10.0.0.0/8", "start": "10.0.0.0", "end": "10.255.255.255" },
+      { "class": "B", "cidr": "172.16.0.0/12", "start": "172.16.0.0", "end": "172.31.255.255" },
+      { "class": "C", "cidr": "192.168.0.0/16", "start": "192.168.0.0", "end": "192.168.255.255" }
+    ],
+    "loopback_range": "127.0.0.0/8",
+    "multicast_range": "224.0.0.0/4"
+  },
+  "cidr_to_masks": {
+    "8":  { "mask": "255.0.0.0",       "wildcard": "0.255.255.255" },
+    "16": { "mask": "255.255.0.0",     "wildcard": "0.0.255.255" },
+    "24": { "mask": "255.255.255.0",   "wildcard": "0.0.0.255" },
+    "25": { "mask": "255.255.255.128", "wildcard": "0.0.0.127" },
+    "26": { "mask": "255.255.255.192", "wildcard": "0.0.0.63" },
+    "27": { "mask": "255.255.255.224", "wildcard": "0.0.0.31" },
+    "28": { "mask": "255.255.255.240", "wildcard": "0.0.0.15" },
+    "29": { "mask": "255.255.255.248", "wildcard": "0.0.0.7" },
+    "30": { "mask": "255.255.255.252", "wildcard": "0.0.0.3" },
+    "32": { "mask": "255.255.255.255", "wildcard": "0.0.0.0" }
+  },
+  "vlan_rules": {
+    "min_id": 1,
+    "max_id": 4094,
+    "default_vlan": 1,
+    "normal_range": [1, 1005],
+    "extended_range": [1006, 4094],
+    "reserved_vlans": {
+      "1": "Default Ethernet VLAN (cannot be deleted or renamed)",
+      "1002": "fddi-default (legacy reserved)",
+      "1003": "token-ring-default (legacy reserved)",
+      "1004": "fddinet-default (legacy reserved)",
+      "1005": "trnet-default (legacy reserved)"
+    }
+  },
+  "acl_rules": {
+    "standard_ranges": [[1, 99], [1300, 1999]],
+    "extended_ranges": [[100, 199], [2000, 2699]],
+    "protocols": ["ip", "tcp", "udp", "icmp"],
+    "well_known_ports": {
+      "http": 80,
+      "https": 443,
+      "ssh": 22,
+      "telnet": 23,
+      "dns": 53,
+      "dhcp_server": 67,
+      "dhcp_client": 68,
+      "tftp": 69,
+      "ntp": 123,
+      "snmp": 161,
+      "bgp": 179
+    }
+  },
+  "typo_dictionary": {
+    "acces": "access",
+    "accss": "access",
+    "switchprot": "switchport",
+    "swichport": "switchport",
+    "addres": "address",
+    "adress": "address",
+    "shudown": "shutdown",
+    "shut": "shutdown",
+    "noshut": "no shutdown",
+    "encapsulaton": "encapsulation",
+    "rout": "route",
+    "exclued-address": "excluded-address",
+    "interafce": "interface",
+    "interfce": "interface",
+    "passve-interface": "passive-interface",
+    "passiv-interface": "passive-interface"
+  }
+}

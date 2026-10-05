@@ -1,0 +1,22 @@
+! ==========================================================
+! CISCO PACKET TRACER AUTOMATION SCRIPT
+! Target Device: SW_9
+! Scenario: VLAN_SW_9
+! Instructions: Open Packet Tracer -> Click Device -> CLI -> Paste
+! ==========================================================
+enable
+configure terminal
+hostname SW_9
+vlan 70
+ name Guests
+exit
+interface FastEthernet0/15
+ switchport mode access
+ switchport access vlan 70
+ no shutdown
+exit
+end
+write memory
+end
+write memory
+show running-config

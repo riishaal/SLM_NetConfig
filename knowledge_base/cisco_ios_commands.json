@@ -1,0 +1,192 @@
+{
+  "vendor": "Cisco",
+  "operating_system": "Cisco IOS / IOS XE",
+  "version": "Gibraltar 16.11.1+",
+  "modes": {
+    "GLOBAL": "configure terminal",
+    "INTERFACE": "interface <interface_id>",
+    "ROUTER_OSPF": "router ospf <process_id>",
+    "VLAN": "vlan <vlan_id>",
+    "DHCP_POOL": "ip dhcp pool <pool_name>",
+    "LINE": "line <line_type> <number>"
+  },
+  "commands": [
+    {
+      "command": "vlan <id>",
+      "mode": "GLOBAL",
+      "category": "VLAN",
+      "description": "Create or enter VLAN configuration mode",
+      "parameters": {
+        "id": {
+          "type": "integer",
+          "min": 1,
+          "max": 4094,
+          "reserved": [1, 1002, 1003, 1004, 1005]
+        }
+      },
+      "subcommands": [
+        {
+          "command": "name <string>",
+          "description": "Assign an administrative name to the VLAN"
+        }
+      ]
+    },
+    {
+      "command": "interface <id>",
+      "mode": "GLOBAL",
+      "category": "INTERFACE",
+      "description": "Enter interface configuration mode",
+      "parameters": {
+        "id": {
+          "type": "regex",
+          "pattern": "^(GigabitEthernet|FastEthernet|Ethernet|Vlan|Loopback|Serial)[0-9]+(/[0-9]+)*$"
+        }
+      }
+    },
+    {
+      "command": "ip address <ip> <mask>",
+      "mode": "INTERFACE",
+      "category": "IP_ADDRESSING",
+      "description": "Assign IPv4 address and subnet mask to interface",
+      "parameters": {
+        "ip": { "type": "ipv4" },
+        "mask": { "type": "ipv4_netmask" }
+      }
+    },
+    {
+      "command": "no shutdown",
+      "mode": "INTERFACE",
+      "category": "INTERFACE",
+      "description": "Enable and bring the interface administratively up"
+    },
+    {
+      "command": "shutdown",
+      "mode": "INTERFACE",
+      "category": "INTERFACE",
+      "description": "Administratively disable the interface"
+    },
+    {
+      "command": "switchport mode access",
+      "mode": "INTERFACE",
+      "category": "VLAN",
+      "description": "Set interface to nontrunking access mode"
+    },
+    {
+      "command": "switchport access vlan <id>",
+      "mode": "INTERFACE",
+      "category": "VLAN",
+      "description": "Assign access interface to specific VLAN ID",
+      "parameters": {
+        "id": { "type": "integer", "min": 1, "max": 4094 }
+      }
+    },
+    {
+      "command": "switchport mode trunk",
+      "mode": "INTERFACE",
+      "category": "VLAN_TRUNK",
+      "description": "Set interface to trunking mode"
+    },
+    {
+      "command": "switchport trunk encapsulation dot1q",
+      "mode": "INTERFACE",
+      "category": "VLAN_TRUNK",
+      "description": "Set trunk encapsulation to IEEE 802.1Q"
+    },
+    {
+      "command": "switchport trunk allowed vlan <vlans>",
+      "mode": "INTERFACE",
+      "category": "VLAN_TRUNK",
+      "description": "Define VLANs allowed across trunk link",
+      "parameters": {
+        "vlans": { "type": "vlan_list_or_range" }
+      }
+    },
+    {
+      "command": "ip routing",
+      "mode": "GLOBAL",
+      "category": "ROUTING",
+      "description": "Enable IPv4 routing globally on a multilayer switch or router"
+    },
+    {
+      "command": "ip route <network> <mask> <nexthop_or_interface>",
+      "mode": "GLOBAL",
+      "category": "ROUTING_STATIC",
+      "description": "Configure static IPv4 route",
+      "parameters": {
+        "network": { "type": "ipv4" },
+        "mask": { "type": "ipv4_netmask" },
+        "nexthop_or_interface": { "type": "string" }
+      }
+    },
+    {
+      "command": "router ospf <process_id>",
+      "mode": "GLOBAL",
+      "category": "ROUTING_OSPF",
+      "description": "Enable OSPF routing process",
+      "parameters": {
+        "process_id": { "type": "integer", "min": 1, "max": 65535 }
+      },
+      "subcommands": [
+        {
+          "command": "network <ip> <wildcard> area <area_id>",
+          "description": "Define network interfaces on which OSPF runs and their area",
+          "parameters": {
+            "ip": { "type": "ipv4" },
+            "wildcard": { "type": "ipv4_wildcard" },
+            "area_id": { "type": "integer", "min": 0, "max": 4294967295 }
+          }
+        },
+        {
+          "command": "passive-interface <interface>",
+          "description": "Suppress routing updates on specified interface"
+        }
+      ]
+    },
+    {
+      "command": "ip dhcp pool <name>",
+      "mode": "GLOBAL",
+      "category": "DHCP",
+      "description": "Create DHCP server address pool",
+      "parameters": {
+        "name": { "type": "string" }
+      },
+      "subcommands": [
+        { "command": "network <ip> <mask>", "description": "Subnet network for DHCP pool" },
+        { "command": "default-router <ip>", "description": "Default gateway for DHCP clients" },
+        { "command": "dns-server <ip>", "description": "DNS server IP for clients" },
+        { "command": "domain-name <domain>", "description": "Domain name for clients" }
+      ]
+    },
+    {
+      "command": "ip dhcp excluded-address <low_ip> [<high_ip>]",
+      "mode": "GLOBAL",
+      "category": "DHCP",
+      "description": "Reserve IP addresses from being assigned by DHCP",
+      "parameters": {
+        "low_ip": { "type": "ipv4" },
+        "high_ip": { "type": "ipv4", "optional": true }
+      }
+    },
+    {
+      "command": "access-list <id> {permit|deny} <protocol> <src> <src_wildcard> <dst> <dst_wildcard> [eq <port>]",
+      "mode": "GLOBAL",
+      "category": "SECURITY_ACL",
+      "description": "Define standard or extended IPv4 Access Control List",
+      "parameters": {
+        "id": {
+          "type": "integer",
+          "standard_range": [1, 99],
+          "extended_range": [100, 199]
+        },
+        "action": { "enum": ["permit", "deny"] },
+        "protocol": { "enum": ["ip", "tcp", "udp", "icmp"] }
+      }
+    },
+    {
+      "command": "ip access-group <id> {in|out}",
+      "mode": "INTERFACE",
+      "category": "SECURITY_ACL",
+      "description": "Apply Access Control List to interface traffic direction"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+! ==========================================================
+! CISCO PACKET TRACER AUTOMATION SCRIPT
+! Target Device: SW_3
+! Scenario: IP_ADDRESSING_SW_3
+! Instructions: Open Packet Tracer -> Click Device -> CLI -> Paste
+! ==========================================================
+enable
+configure terminal
+hostname SW_3
+interface GigabitEthernet0/4
+ ip address 192.168.110.1 255.255.255.0
+ no shutdown
+exit
+end
+write memory
+end
+write memory
+show running-config
