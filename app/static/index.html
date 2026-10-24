@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SLM-Based Intelligent Network Configuration</title>
+  <meta name="description" content="Natural Language to Network Configuration with SLM and Closed-Loop Verification.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    
+    <!-- Top Header -->
+    <header class="header">
+      <div class="header-content">
+        <div class="brand">
+          <div class="brand-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+              <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+              <line x1="6" y1="6" x2="6.01" y2="6"></line>
+              <line x1="6" y1="18" x2="6.01" y2="18"></line>
+            </svg>
+          </div>
+          <div>
+            <h1 class="main-title">SLM-Based Intelligent Network Configuration</h1>
+            <p class="subtitle">Natural Language &rarr; Network Configuration</p>
+          </div>
+        </div>
+        <div class="header-meta">
+          <span class="badge project-badge">B.Tech Project Review</span>
+          <span class="status-indicator">
+            <span class="status-dot"></span>
+            <span>Agent Active</span>
+          </span>
+        </div>
+      </div>
+    </header>
+
+    <main class="dashboard-main">
+      
+      <!-- Section 1: Network Requirement Card -->
+      <section class="card input-card">
+        <div class="card-header">
+          <div class="card-title-group">
+            <span class="section-number">1</span>
+            <h2>Network Requirement</h2>
+          </div>
+          <span class="card-hint">Enter your requirement in plain English or select an example below</span>
+        </div>
+
+        <!-- Clickable Example Buttons -->
+        <div class="examples-container">
+          <span class="examples-label">Example Requirements:</span>
+          <div class="examples-grid">
+            <button type="button" class="example-btn" data-index="1" id="example-btn-1">
+              <span class="example-num">1</span>
+              <span class="example-text">Create VLAN 20 named Accounts.</span>
+            </button>
+            <button type="button" class="example-btn" data-index="2" id="example-btn-2">
+              <span class="example-num">2</span>
+              <span class="example-text">Configure GigabitEthernet0/1 with IP address 192.168.20.1 and subnet mask 255.255.255.0.</span>
+            </button>
+            <button type="button" class="example-btn" data-index="3" id="example-btn-3">
+              <span class="example-num">3</span>
+              <span class="example-text">Configure GigabitEthernet0/1 as a trunk port and allow VLANs 10 and 20.</span>
+            </button>
+            <button type="button" class="example-btn" data-index="4" id="example-btn-4">
+              <span class="example-num">4</span>
+              <span class="example-text">Configure OSPF routing using network 192.168.1.0/24 in area 0.</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Input Area Form -->
+        <form id="config-form" class="config-form">
+          <div class="textarea-wrapper">
+            <textarea
+              id="requirement-input"
+              class="requirement-textarea"
+              rows="4"
+              placeholder="Example: Create VLAN 20 named Accounts."
+              required
+            ></textarea>
+          </div>
+
+          <div class="form-actions">
+            <div class="device-input-group">
+              <label for="device-name">Target Device:</label>
+              <input type="text" id="device-name" value="Switch1" spellcheck="false" autocomplete="off" />
+            </div>
+            <button type="submit" id="generate-btn" class="btn btn-primary">
+              <span class="btn-spinner" id="btn-spinner"></span>
+              <svg class="btn-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+              </svg>
+              <span id="btn-text">Generate Configuration</span>
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Results Grid (Appears after submission) -->
+      <div id="results-area" class="results-area" style="display: none;">
+        
+        <!-- Summary Cards Row: Verification, Category, Processing Time -->
+        <div class="metrics-row">
+          
+          <!-- Section 3: Verification Result -->
+          <div class="card metric-card" id="card-verification">
+            <div class="metric-label">
+              <span class="section-number-small">3</span>
+              Verification Result
+            </div>
+            <div class="metric-value-container">
+              <span id="verification-status" class="verification-badge">APPROVED (PASSED)</span>
+            </div>
+            <div class="metric-sub" id="verification-sub">Verified by 3-tier closed-loop agent</div>
+          </div>
+
+          <!-- Section 4: Detected Category -->
+          <div class="card metric-card" id="card-category">
+            <div class="metric-label">
+              <span class="section-number-small">4</span>
+              Detected Category
+            </div>
+            <div class="metric-value-container">
+              <span id="detected-category" class="category-pill">VLAN</span>
+            </div>
+            <div class="metric-sub" id="category-sub">Classified by SLM Intent Engine</div>
+          </div>
+
+          <!-- Section 5: Processing Time Metric -->
+          <div class="card metric-card" id="card-time">
+            <div class="metric-label">
+              <span class="section-number-small">5</span>
+              Processing Time
+            </div>
+            <div class="metric-value-container">
+              <span id="processing-time" class="time-value">0.001s</span>
+            </div>
+            <div class="metric-sub">Real-time local translation & verification</div>
+          </div>
+
+        </div>
+
+        <!-- Section 2: Generated Configuration Card -->
+        <section class="card config-card" id="card-generated-config">
+          <div class="card-header config-card-header">
+            <div class="card-title-group">
+              <span class="section-number">2</span>
+              <h2>Generated Configuration</h2>
+              <span class="badge cisco-badge">Cisco IOS XE</span>
+            </div>
+            <button type="button" id="copy-btn" class="btn btn-secondary copy-btn" title="Copy configuration to clipboard">
+              <svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              <span id="copy-btn-text">Copy Configuration</span>
+            </button>
+          </div>
+          <div class="code-container">
+            <pre><code id="generated-config-code" class="config-code"></code></pre>
+          </div>
+        </section>
+
+        <!-- Section 5: Detailed Processing Information Card -->
+        <section class="card info-card" id="card-processing-info">
+          <div class="card-header">
+            <div class="card-title-group">
+              <span class="section-number">5</span>
+              <h2>Processing Information</h2>
+            </div>
+            <span class="card-hint">System output paths and audit artifacts</span>
+          </div>
+          <div class="info-grid">
+            <div class="info-item" id="info-repo-item">
+              <span class="info-label">Configuration Output Location:</span>
+              <div class="info-value-box">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                </svg>
+                <span id="config-location-text" class="file-path"></span>
+              </div>
+            </div>
+            <div class="info-item" id="info-pt-item">
+              <span class="info-label">Packet Tracer Export Location:</span>
+              <div class="info-value-box">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="4 17 10 11 4 5"></polyline>
+                  <line x1="12" y1="19" x2="20" y2="19"></line>
+                </svg>
+                <span id="pt-location-text" class="file-path"></span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- Section: System Flow (Visual Flow at bottom) -->
+      <section class="card flow-card">
+        <div class="flow-header">
+          <h3>System Flow</h3>
+          <p class="flow-subtitle">Closed-Loop Autonomous Architecture (IEEE OJCOMS 2026)</p>
+        </div>
+        <div class="flow-diagram">
+          
+          <div class="flow-step" id="flow-step-1">
+            <div class="step-badge">1</div>
+            <div class="step-title">Natural Language Requirement</div>
+            <div class="step-desc">Input requirement parsing & entity extraction</div>
+          </div>
+
+          <div class="flow-connector">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <polyline points="19 12 12 19 5 12"></polyline>
+            </svg>
+          </div>
+
+          <div class="flow-step" id="flow-step-2">
+            <div class="step-badge">2</div>
+            <div class="step-title">Intent Detection</div>
+            <div class="step-desc">SLM requirement classification & subtask planning</div>
+          </div>
+
+          <div class="flow-connector">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <polyline points="19 12 12 19 5 12"></polyline>
+            </svg>
+          </div>
+
+          <div class="flow-step" id="flow-step-3">
+            <div class="step-badge">3</div>
+            <div class="step-title">Configuration Generation</div>
+            <div class="step-desc">Domain pattern matching & Cisco command synthesis</div>
+          </div>
+
+          <div class="flow-connector">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <polyline points="19 12 12 19 5 12"></polyline>
+            </svg>
+          </div>
+
+          <div class="flow-step" id="flow-step-4">
+            <div class="step-badge">4</div>
+            <div class="step-title">Verification</div>
+            <div class="step-desc">Syntax, semantic bounds & functional simulation</div>
+          </div>
+
+          <div class="flow-connector">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <polyline points="19 12 12 19 5 12"></polyline>
+            </svg>
+          </div>
+
+          <div class="flow-step" id="flow-step-5">
+            <div class="step-badge">5</div>
+            <div class="step-title">Cisco IOS Configuration</div>
+            <div class="step-desc">Approved device config & Packet Tracer export</div>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>SLM-Based Intelligent Network Configuration &bull; B.Tech CSE Project Group 11 &bull; MEA Engineering College</p>
+    </footer>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

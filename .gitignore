@@ -44,8 +44,20 @@ training/checkpoints/
 .idea/
 *.swp
 
+# Testing & Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+*.log
+
+# Environment & Secrets
+.env
+.env.*
+
 # OS generated
 Thumbs.db
 ehthumbs.db
 [Dd]esktop.ini
 $RECYCLE.BIN/
+.DS_Store
+

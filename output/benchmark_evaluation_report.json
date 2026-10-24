@@ -1,9 +1,9 @@
 {
-  "evaluation_timestamp": "Mon Oct  5 11:29:46 2026",
+  "evaluation_timestamp": "Fri Oct  9 10:42:10 2026",
   "total_scenarios_evaluated": 20,
-  "total_benchmark_duration_sec": 0.04,
-  "average_latency_sec": 0.0021,
-  "mean_complexity_score": 0.3309,
+  "total_benchmark_duration_sec": 0.05,
+  "average_latency_sec": 0.0024,
+  "mean_complexity_score": 0.3129,
   "overall_verification_rate": 55.0,
   "syntax_accuracy": {
     "correct_count": 20,
@@ -30,12 +30,12 @@
       "goal_score": 1,
       "verified": true,
       "iterations": 1,
-      "duration_sec": 0.007006645202636719,
+      "duration_sec": 0.009415388107299805,
       "total_len": 306,
       "errors": [],
       "norm_duration": 1.0,
-      "norm_len": 0.2568,
-      "complexity_score": 0.6284
+      "norm_len": 0.2603,
+      "complexity_score": 0.6301
     },
     {
       "benchmark_id": 2,
@@ -45,12 +45,12 @@
       "goal_score": 1,
       "verified": true,
       "iterations": 1,
-      "duration_sec": 0.002996206283569336,
+      "duration_sec": 0.002548694610595703,
       "total_len": 321,
       "errors": [],
-      "norm_duration": 0.4276,
-      "norm_len": 0.3581,
-      "complexity_score": 0.3929
+      "norm_duration": 0.2707,
+      "norm_len": 0.363,
+      "complexity_score": 0.3169
     },
     {
       "benchmark_id": 3,
@@ -60,12 +60,12 @@
       "goal_score": 1,
       "verified": true,
       "iterations": 1,
-      "duration_sec": 0.0023336410522460938,
+      "duration_sec": 0.003136157989501953,
       "total_len": 292,
       "errors": [],
       "norm_duration": 0.3331,
-      "norm_len": 0.1622,
-      "complexity_score": 0.2476
+      "norm_len": 0.1644,
+      "complexity_score": 0.2487
     },
     {
       "benchmark_id": 4,
@@ -75,15 +75,14 @@
       "goal_score": 0,
       "verified": false,
       "iterations": 3,
-      "duration_sec": 0.0018892288208007812,
+      "duration_sec": 0.0009989738464355469,
       "total_len": 292,
       "errors": [
-        "Intent Error: Requested IP 10.0.50.1 not found in generated configuration.",
-        "Intent Error: Requested IP 255.255.255.0 not found in generated configuration."
+        "Intent Error: Requested IP 10.0.50.1 not found in generated configuration."
       ],
-      "norm_duration": 0.2696,
-      "norm_len": 0.1622,
-      "complexity_score": 0.2159
+      "norm_duration": 0.1061,
+      "norm_len": 0.1644,
+      "complexity_score": 0.1352
     },
     {
       "benchmark_id": 5,
@@ -93,14 +92,14 @@
       "goal_score": 0,
       "verified": false,
       "iterations": 3,
-      "duration_sec": 0.0,
+      "duration_sec": 0.0009996891021728516,
       "total_len": 268,
       "errors": [
         "Intent Error: Requested interface GigabitEthernet0/3 not configured."
       ],
-      "norm_duration": 0.0,
+      "norm_duration": 0.1062,
       "norm_len": 0.0,
-      "complexity_score": 0.0
+      "complexity_score": 0.0531
     },
     {
       "benchmark_id": 6,
@@ -110,16 +109,14 @@
       "goal_score": 0,
       "verified": false,
       "iterations": 3,
-      "duration_sec": 0.0014874935150146484,
-      "total_len": 412,
+      "duration_sec": 0.0019996166229248047,
+      "total_len": 410,
       "errors": [
-        "Intent Error: Requested IP 192.168.10.1 not found in generated configuration.",
-        "Intent Error: Requested IP 192.168.10.1 not found in generated configuration.",
         "Intent Error: Requested IP 192.168.10.10 not found in generated configuration."
       ],
-      "norm_duration": 0.2123,
-      "norm_len": 0.973,
-      "complexity_score": 0.5926
+      "norm_duration": 0.2124,
+      "norm_len": 0.9726,
+      "complexity_score": 0.5925
     },
     {
       "benchmark_id": 7,
@@ -129,12 +126,12 @@
       "goal_score": 1,
       "verified": true,
       "iterations": 1,
-      "duration_sec": 0.001997232437133789,
+      "duration_sec": 0.003844022750854492,
       "total_len": 358,
       "errors": [],
-      "norm_duration": 0.285,
-      "norm_len": 0.6081,
-      "complexity_score": 0.4466
+      "norm_duration": 0.4083,
+      "norm_len": 0.6164,
+      "complexity_score": 0.5124
     },
     {
       "benchmark_id": 8,
@@ -144,16 +141,15 @@
       "goal_score": 0,
       "verified": false,
       "iterations": 3,
-      "duration_sec": 0.0009989738464355469,
+      "duration_sec": 0.0019974708557128906,
       "total_len": 358,
       "errors": [
         "Intent Error: Requested VLAN 140 not found in generated configuration.",
-        "Intent Error: Requested IP 255.255.255.0 not found in generated configuration.",
         "Intent Error: Requested interface FastEthernet0/4 not configured."
       ],
-      "norm_duration": 0.1426,
-      "norm_len": 0.6081,
-      "complexity_score": 0.3753
+      "norm_duration": 0.2121,
+      "norm_len": 0.6164,
+      "complexity_score": 0.4143
     },
     {
       "benchmark_id": 9,
@@ -163,12 +159,12 @@
       "goal_score": 1,
       "verified": true,
       "iterations": 1,
-      "duration_sec": 0.003002166748046875,
+      "duration_sec": 0.0033135414123535156,
       "total_len": 304,
       "errors": [],
-      "norm_duration": 0.4285,
-      "norm_len": 0.2432,
-      "complexity_score": 0.3359
+      "norm_duration": 0.3519,
+      "norm_len": 0.2466,
+      "complexity_score": 0.2993
     },
     {
       "benchmark_id": 10,
@@ -178,12 +174,12 @@
       "goal_score": 1,
       "verified": true,
       "iterations": 1,
-      "duration_sec": 0.003428936004638672,
+      "duration_sec": 0.0032961368560791016,
       "total_len": 323,
       "errors": [],
-      "norm_duration": 0.4894,
-      "norm_len": 0.3716,
-      "complexity_score": 0.4305
+      "norm_duration": 0.3501,
+      "norm_len": 0.3767,
+      "complexity_score": 0.3634
     },
     {
       "benchmark_id": 11,
@@ -193,12 +189,12 @@
       "goal_score": 1,
       "verified": true,
       "iterations": 1,
-      "duration_sec": 0.0020012855529785156,
+      "duration_sec": 0.0021131038665771484,
       "total_len": 294,
       "errors": [],
-      "norm_duration": 0.2856,
-      "norm_len": 0.1757,
-      "complexity_score": 0.2307
+      "norm_duration": 0.2244,
+      "norm_len": 0.1781,
+      "complexity_score": 0.2013
     },
     {
       "benchmark_id": 12,
@@ -208,15 +204,14 @@
       "goal_score": 0,
       "verified": false,
       "iterations": 3,
-      "duration_sec": 0.0009980201721191406,
+      "duration_sec": 0.0010263919830322266,
       "total_len": 294,
       "errors": [
-        "Intent Error: Requested IP 10.0.20.1 not found in generated configuration.",
-        "Intent Error: Requested IP 255.255.255.0 not found in generated configuration."
+        "Intent Error: Requested IP 10.0.20.1 not found in generated configuration."
       ],
-      "norm_duration": 0.1424,
-      "norm_len": 0.1757,
-      "complexity_score": 0.1591
+      "norm_duration": 0.109,
+      "norm_len": 0.1781,
+      "complexity_score": 0.1435
     },
     {
       "benchmark_id": 13,
@@ -226,14 +221,14 @@
       "goal_score": 0,
       "verified": false,
       "iterations": 3,
-      "duration_sec": 0.0,
+      "duration_sec": 0.0013620853424072266,
       "total_len": 270,
       "errors": [
         "Intent Error: Requested interface GigabitEthernet0/3 not configured."
       ],
-      "norm_duration": 0.0,
-      "norm_len": 0.0135,
-      "complexity_score": 0.0068
+      "norm_duration": 0.1447,
+      "norm_len": 0.0137,
+      "complexity_score": 0.0792
     },
     {
       "benchmark_id": 14,
@@ -243,16 +238,14 @@
       "goal_score": 0,
       "verified": false,
       "iterations": 3,
-      "duration_sec": 0.0012941360473632812,
-      "total_len": 416,
+      "duration_sec": 0.0,
+      "total_len": 414,
       "errors": [
-        "Intent Error: Requested IP 192.168.50.1 not found in generated configuration.",
-        "Intent Error: Requested IP 192.168.50.1 not found in generated configuration.",
         "Intent Error: Requested IP 192.168.50.10 not found in generated configuration."
       ],
-      "norm_duration": 0.1847,
+      "norm_duration": 0.0,
       "norm_len": 1.0,
-      "complexity_score": 0.5924
+      "complexity_score": 0.5
     },
     {
       "benchmark_id": 15,
@@ -262,12 +255,12 @@
       "goal_score": 1,
       "verified": true,
       "iterations": 1,
-      "duration_sec": 0.002557516098022461,
+      "duration_sec": 0.0032701492309570312,
       "total_len": 360,
       "errors": [],
-      "norm_duration": 0.365,
-      "norm_len": 0.6216,
-      "complexity_score": 0.4933
+      "norm_duration": 0.3473,
+      "norm_len": 0.6301,
+      "complexity_score": 0.4887
     },
     {
       "benchmark_id": 16,
@@ -277,16 +270,15 @@
       "goal_score": 0,
       "verified": false,
       "iterations": 3,
-      "duration_sec": 0.001001119613647461,
+      "duration_sec": 0.0010013580322265625,
       "total_len": 360,
       "errors": [
         "Intent Error: Requested VLAN 110 not found in generated configuration.",
-        "Intent Error: Requested IP 255.255.255.0 not found in generated configuration.",
         "Intent Error: Requested interface FastEthernet0/1 not configured."
       ],
-      "norm_duration": 0.1429,
-      "norm_len": 0.6216,
-      "complexity_score": 0.3823
+      "norm_duration": 0.1064,
+      "norm_len": 0.6301,
+      "complexity_score": 0.3682
     },
     {
       "benchmark_id": 17,
@@ -296,12 +288,12 @@
       "goal_score": 1,
       "verified": true,
       "iterations": 1,
-      "duration_sec": 0.0010001659393310547,
+      "duration_sec": 0.003181934356689453,
       "total_len": 312,
       "errors": [],
-      "norm_duration": 0.1427,
-      "norm_len": 0.2973,
-      "complexity_score": 0.22
+      "norm_duration": 0.338,
+      "norm_len": 0.3014,
+      "complexity_score": 0.3197
     },
     {
       "benchmark_id": 18,
@@ -311,12 +303,12 @@
       "goal_score": 1,
       "verified": true,
       "iterations": 1,
-      "duration_sec": 0.0013778209686279297,
+      "duration_sec": 0.002076387405395508,
       "total_len": 323,
       "errors": [],
-      "norm_duration": 0.1966,
-      "norm_len": 0.3716,
-      "complexity_score": 0.2841
+      "norm_duration": 0.2205,
+      "norm_len": 0.3767,
+      "complexity_score": 0.2986
     },
     {
       "benchmark_id": 19,
@@ -326,12 +318,12 @@
       "goal_score": 1,
       "verified": true,
       "iterations": 1,
-      "duration_sec": 0.004809141159057617,
+      "duration_sec": 0.0022945404052734375,
       "total_len": 292,
       "errors": [],
-      "norm_duration": 0.6864,
-      "norm_len": 0.1622,
-      "complexity_score": 0.4243
+      "norm_duration": 0.2437,
+      "norm_len": 0.1644,
+      "complexity_score": 0.204
     },
     {
       "benchmark_id": 20,
@@ -341,15 +333,14 @@
       "goal_score": 0,
       "verified": false,
       "iterations": 3,
-      "duration_sec": 0.0009982585906982422,
+      "duration_sec": 0.0,
       "total_len": 294,
       "errors": [
-        "Intent Error: Requested IP 10.0.50.1 not found in generated configuration.",
-        "Intent Error: Requested IP 255.255.255.0 not found in generated configuration."
+        "Intent Error: Requested IP 10.0.50.1 not found in generated configuration."
       ],
-      "norm_duration": 0.1425,
-      "norm_len": 0.1757,
-      "complexity_score": 0.1591
+      "norm_duration": 0.0,
+      "norm_len": 0.1781,
+      "complexity_score": 0.089
     }
   ]
 }

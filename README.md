@@ -93,9 +93,9 @@ User Natural Language Input (Requirement / Question)
 - **Core Language:** Python 3.10.10
 - **Deep Learning & Fine-Tuning:** PyTorch, Hugging Face `transformers`, `peft` (LoRA), `accelerate`, `datasets`
 - **Network Configuration Parsing:** `ciscoconfparse2`
-- **Web Dashboard:** `streamlit`
+- **Web Interface & Dashboard:** Python HTTP REST server (`app/server.py`), HTML5/CSS3/JS, and `streamlit`
 - **Data & Visualization:** `pandas`, `numpy`, `matplotlib`, `seaborn`, `rich`
-- **Automated Testing:** `pytest` (12/12 Automated Verification Scenarios)
+- **Automated Testing:** `pytest` (16/16 Automated Verification Scenarios)
 - **Network Emulation / Target:** Cisco Packet Tracer / GNS3 script integration
 
 ---
@@ -107,7 +107,9 @@ SLM/
 ├── app/
 │   ├── __init__.py
 │   ├── input_handler.py        # Module 1: Natural language entity extraction & intake
-│   └── ui.py                   # Module 14: Interactive 5-tab Streamlit dashboard
+│   ├── server.py               # Module 14: REST API server for web interface
+│   ├── static/                 # Web interface frontend (HTML5, CSS3, JS)
+│   └── ui.py                   # Streamlit dashboard interface
 ├── controller/
 │   ├── __init__.py
 │   └── agent.py                # Module 2: 4-component Agent orchestrator with closed-loop
@@ -152,7 +154,8 @@ SLM/
 │   └── evaluator.py            # Module 13: Mathematical evaluation engine (Eq 1-9)
 ├── tests/
 │   ├── __init__.py
-│   ├── test_pipeline.py        # Automated 12-test suite for pytest
+│   ├── test_pipeline.py        # Automated core pipeline test suite
+│   ├── test_web_ui.py          # Web UI & server API integration tests
 │   └── generate_test_report.py # Generates docs/TEST_RESULTS.md
 ├── output/
 │   ├── ConfigsRepo/            # Approved, verified device configurations
@@ -183,39 +186,46 @@ python -m pip install -r requirements.txt
 ```
 
 ### Step 3: Verify the Installation
-Run the automated test suite to ensure all 12 modules pass:
+Run the automated test suite across all modules and web UI handlers:
 ```powershell
-python -m pytest tests/test_pipeline.py -v
+python -m pytest tests/ -v
 ```
-*Expected Output:* `12 passed in < 1.0s`.
+*Expected Output:* `16 passed in < 1.5s`.
 
 ---
 
 ## 6. How to Run the System
 
-### Option A: Interactive Web Dashboard (Recommended for Viva)
-Launch the Streamlit user interface:
+### Option A: Web Interface (Recommended)
+Launch the lightweight web application server:
 ```powershell
 python run.py --ui
+```
+*The web interface will open at `http://127.0.0.1:5000` with the natural language configuration workspace, real-time validation badges, and Packet Tracer export.*
+
+### Option B: Streamlit Dashboard
+Launch the multi-tab interactive Streamlit dashboard:
+```powershell
+python run.py --streamlit
 ```
 or directly:
 ```powershell
 python -m streamlit run app/ui.py
 ```
-*The web browser will open at `http://localhost:8501` featuring:*
+*The dashboard will open at `http://localhost:8501` featuring:*
 1. **Configuration Pipeline Tab:** Real-time intent translation, decomposed steps, and generated Cisco CLI.
 2. **Validation & Errors Tab:** Syntax status (`PASSED`, `PARTIALLY_UNRECOGNIZED`), semantic bounds, and auto-fix suggestions.
 3. **Simulation Tab:** Virtual device state (VLAN DB, Interface status, Routing table) and downloadable Packet Tracer scripts.
 4. **Evaluation Tab:** Run the 150-scenario benchmark and compute IEEE 2026 accuracy and complexity metrics.
 5. **Knowledge Base Tab:** Inspect Cisco commands, RFC 1918 subnets, and typo dictionaries.
 
-### Option B: Command Line Interface (CLI)
+### Option C: Command Line Interface (CLI)
 Execute an immediate query via terminal:
 ```powershell
 python run.py --cli --query "Create VLAN 10 named HR and assign FastEthernet0/1 to VLAN 10."
 ```
 
-### Option C: Run 150-Scenario Benchmark Evaluation
+### Option D: Run 150-Scenario Benchmark Evaluation
 Evaluate the framework using the mathematical formulas from the IEEE 2026 paper:
 ```powershell
 python run.py --eval --samples 20

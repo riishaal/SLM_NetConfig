@@ -8,7 +8,7 @@ enable
 configure terminal
 hostname Switch1
 router ospf 1
- network 192.168.10.0 0.0.0.255 area 0
+ network 192.168.1.0 0.0.0.255 area 0
 exit
 end
 write memory

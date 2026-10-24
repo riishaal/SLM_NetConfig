@@ -1,59 +1,106 @@
 """
 SLM-Based Intelligent Network Configuration
-Interactive Web Dashboard & Demonstration Interface (Streamlit)
-Connects directly to the backend Agent, Knowledge Base, SLM Engine,
-Validator, Error Corrector, Network Simulator, and Evaluation modules.
+Streamlit Web Dashboard (Alternative Runner)
+Builds on top of existing NetworkConfigAgent module.
 """
 
 import os
 import sys
 import time
-import json
 import streamlit as st
-import pandas as pd
 
 # Ensure workspace root is in path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from controller.agent import NetworkConfigAgent
-from knowledge_base.kb_manager import KnowledgeBaseManager
-from simulation.packet_tracer_exporter import PacketTracerExporter
-from dataset.dataset_loader import DatasetLoader
-from evaluation.evaluator import BenchmarkEvaluator
 
-
-# Page Setup
+# Streamlit Page Config
 st.set_page_config(
-    page_title="SLM Network Configurator | MEA CSE Group 11",
+    page_title="SLM-Based Intelligent Network Configuration",
     page_icon="🌐",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed"
 )
 
 # Custom Styling
 st.markdown("""
 <style>
+    .block-container {
+        max-width: 1050px;
+        padding-top: 2rem;
+        padding-bottom: 3rem;
+    }
     .main-title {
-        font-size: 2.2rem;
+        font-size: 2rem;
         font-weight: 700;
-        color: #1E3A8A;
+        color: #0f172a;
         margin-bottom: 0.2rem;
     }
     .sub-title {
         font-size: 1.05rem;
-        color: #4B5563;
+        font-weight: 600;
+        color: #2563eb;
         margin-bottom: 1.5rem;
     }
-    .badge-vlan { background-color: #DBEAFE; color: #1E40AF; padding: 4px 10px; border-radius: 6px; font-weight: 600; }
-    .badge-ospf { background-color: #FEF3C7; color: #92400E; padding: 4px 10px; border-radius: 6px; font-weight: 600; }
-    .badge-acl { background-color: #FEE2E2; color: #991B1B; padding: 4px 10px; border-radius: 6px; font-weight: 600; }
-    .badge-dhcp { background-color: #D1FAE5; color: #065F46; padding: 4px 10px; border-radius: 6px; font-weight: 600; }
-    .metric-card {
-        background-color: #F8FAFC;
-        border: 1px solid #E2E8F0;
+    .section-card {
+        background-color: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .flow-box {
+        background-color: #f8fafc;
+        border: 1px solid #e2e8f0;
         border-radius: 8px;
         padding: 12px;
         text-align: center;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+    .flow-arrow {
+        text-align: center;
+        font-size: 1.3rem;
+        color: #64748b;
+        margin: 4px 0;
+    }
+    .status-approved {
+        background-color: #ecfdf5;
+        color: #059669;
+        padding: 6px 14px;
+        border-radius: 6px;
+        font-weight: 700;
+        border: 1.5px solid #a7f3d0;
+        display: inline-block;
+    }
+    .status-refinement {
+        background-color: #fffbeb;
+        color: #d97706;
+        padding: 6px 14px;
+        border-radius: 6px;
+        font-weight: 700;
+        border: 1.5px solid #fde68a;
+        display: inline-block;
+    }
+    .status-error {
+        background-color: #fef2f2;
+        color: #dc2626;
+        padding: 6px 14px;
+        border-radius: 6px;
+        font-weight: 700;
+        border: 1.5px solid #fecaca;
+        display: inline-block;
+    }
+    .category-badge {
+        background-color: #eff6ff;
+        color: #1e40af;
+        padding: 6px 14px;
+        border-radius: 6px;
+        font-weight: 700;
+        font-family: monospace;
+        border: 1.5px solid #bfdbfe;
+        display: inline-block;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -61,282 +108,127 @@ st.markdown("""
 
 @st.cache_resource
 def get_agent_instance():
-    """Cache agent instance to avoid re-initializing resources."""
     return NetworkConfigAgent(load_model_weights=False)
 
 
-@st.cache_resource
-def get_kb_instance():
-    return KnowledgeBaseManager()
-
-
 agent = get_agent_instance()
-kb = get_kb_instance()
-loader = DatasetLoader()
 
-# Sidebar
-with st.sidebar:
-    st.image("https://img.icons8.com/color/96/network-switch.png", width=64)
-    st.title("SLM NetConfig")
-    st.caption("B.Tech CSE Main Project • MEA Engineering College")
-    st.markdown("**Group 11:**\n- Muhammed Rishal K\n- Muhammed Shahil K\n- Rifa\n- Riza Parveen T\n\n**Guide:** Prof. Nusna Khalid CK")
-    
-    st.divider()
-    st.subheader("📚 Quick Test Scenarios")
-    
-    preset = st.selectbox(
-        "Choose a Preset Requirement:",
-        [
-            "Custom Input",
-            "VLAN 10 HR & VLAN 20 Accounts",
-            "Trunk Port dot1q on Gi0/1",
-            "Interface IP & SVI Gateway",
-            "OSPF Routing Area 0",
-            "DHCP Office Pool & Exclusions",
-            "ACL Deny HTTP Port 80",
-            "Multiplex Branch Configuration",
-            "Invalid Command Typo (switchport mode acces)"
-        ]
-    )
-
-    preset_texts = {
-        "VLAN 10 HR & VLAN 20 Accounts": "Create VLAN 10 named HR and VLAN 20 for Accounts on Switch1, and assign Fa0/1 to VLAN 10.",
-        "Trunk Port dot1q on Gi0/1": "Configure GigabitEthernet0/1 as an 802.1Q trunk port allowing VLANs 10, 20, and 30.",
-        "Interface IP & SVI Gateway": "Enable IP routing, create SVI interface Vlan10 with IP 192.168.10.1 255.255.255.0, and bring it up.",
-        "OSPF Routing Area 0": "Enable OSPF process 1, advertise network 192.168.10.0 0.0.0.255 in area 0, and set Gi0/2 as passive.",
-        "DHCP Office Pool & Exclusions": "Configure DHCP pool OFFICE_NET for 192.168.10.0 255.255.255.0 with gateway 192.168.10.1 and DNS 8.8.8.8, excluding 192.168.10.1 to 192.168.10.10.",
-        "ACL Deny HTTP Port 80": "Create an extended access list 101 to block TCP traffic on port 80 from 192.168.10.0/24 to any destination and apply it in on Gi0/1.",
-        "Multiplex Branch Configuration": "Configure Switch1: Create VLAN 50 named Operations, set Fa0/5 to access VLAN 50, enable IP routing, assign SVI Vlan50 IP 10.50.1.1 255.255.255.0, and advertise in OSPF process 1 area 0.",
-        "Invalid Command Typo (switchport mode acces)": "Configure interface FastEthernet0/1 with switchport mode acces and assign vlan 10."
-    }
-
-    st.divider()
-    st.markdown("### ⚙️ System Engine")
-    st.info("SLM Engine: **Llama-3.2-1B / Qwen2.5-Coder**\n\nMethod: **LoRA (r=64, α=16)**\n\nExecution: **Deterministic + On-Device**")
-
-
-# Main Body
+# Header
 st.markdown('<div class="main-title">SLM-Based Intelligent Network Configuration</div>', unsafe_allow_html=True)
-st.markdown('<div class="sub-title">Zero-Touch Autonomous Network Configuration with Small Language Models and Closed-Loop Verification</div>', unsafe_allow_html=True)
+st.markdown('<div class="sub-title">Natural Language &rarr; Network Configuration</div>', unsafe_allow_html=True)
 
-# Tabs
-tab1, tab2, tab3, tab4, tab5 = st.tabs([
-    "🚀 Configuration Pipeline",
-    "🛡️ Validation & Error Detection",
-    "🧪 Network Simulation & Verification",
-    "📊 Benchmark Evaluation",
-    "📖 Knowledge Base & Docs"
-])
+# State initialization
+if "requirement_text" not in st.session_state:
+    st.session_state["requirement_text"] = ""
+if "device_name" not in st.session_state:
+    st.session_state["device_name"] = "Switch1"
 
-# ----------------- TAB 1: PIPELINE -----------------
-with tab1:
-    default_text = preset_texts.get(preset, "") if preset != "Custom Input" else ""
-    
-    col_input, col_meta = st.columns([3, 1])
-    with col_input:
-        user_query = st.text_area(
-            "Natural Language Network Requirement / Question:",
-            value=default_text,
-            placeholder="e.g. Create VLAN 10 for HR and assign FastEthernet0/1 to VLAN 10.",
-            height=100
-        )
-    with col_meta:
-        device_name = st.text_input("Target Device Name:", value="Switch1")
-        run_btn = st.button("Generate & Verify Configuration", type="primary", use_container_width=True)
+# Callback for example buttons
+def apply_example(text: str):
+    st.session_state["requirement_text"] = text
 
-    if run_btn and user_query.strip():
-        with st.spinner("Executing Agent Closed-Loop Pipeline..."):
-            t_start = time.time()
-            record = agent.process_request(user_query, device_name=device_name)
-            latency = time.time() - t_start
+# SECTION 1: Network Requirement
+st.markdown("### 1. Network Requirement")
+st.markdown("**Example Requirements:**")
 
-        # Store in session state
-        st.session_state["latest_record"] = record
+ex_col1, ex_col2 = st.columns(2)
+with ex_col1:
+    if st.button("1. Create VLAN 20 named Accounts.", use_container_width=True):
+        apply_example("Create VLAN 20 named Accounts.")
+    if st.button("2. Configure GigabitEthernet0/1 with IP address 192.168.20.1 and subnet mask 255.255.255.0.", use_container_width=True):
+        apply_example("Configure GigabitEthernet0/1 with IP address 192.168.20.1 and subnet mask 255.255.255.0.")
 
-    if "latest_record" in st.session_state:
-        rec = st.session_state["latest_record"]
-        
-        st.success(f"Pipeline executed in {rec['total_duration_sec']}s • Closed-loop iterations: {rec['iterations_count']}")
-        
-        col_m1, col_m2, col_m3, col_m4 = st.columns(4)
-        with col_m1:
-            st.metric("Detected Intent Category", rec["detected_category"])
-        with col_m2:
-            st.metric("Input Format", rec["input_format"].capitalize())
-        with col_m3:
-            v_status = "Approved (PASSED)" if rec["verified"] else "Refinement Required"
-            st.metric("Verification Status", v_status)
-        with col_m4:
-            st.metric("Saved in Repo", "Yes" if rec["saved_in_repo"] else "Pending")
+with ex_col2:
+    if st.button("3. Configure GigabitEthernet0/1 as a trunk port and allow VLANs 10 and 20.", use_container_width=True):
+        apply_example("Configure GigabitEthernet0/1 as a trunk port and allow VLANs 10 and 20.")
+    if st.button("4. Configure OSPF routing using network 192.168.1.0/24 in area 0.", use_container_width=True):
+        apply_example("Configure OSPF routing using network 192.168.1.0/24 in area 0.")
 
-        col_left, col_right = st.columns([1, 1])
-        with col_left:
-            st.subheader("1. Decomposed Subtasks (Steps Generator)")
-            for s in rec["decomposed_steps"]:
-                st.markdown(f"- {s}")
+# Input text area
+req_input = st.text_area(
+    "Requirement Text:",
+    value=st.session_state["requirement_text"],
+    placeholder="Example: Create VLAN 20 named Accounts.",
+    height=110,
+    key="text_input_area"
+)
 
-            st.subheader("2. Agent Closed-Loop History")
-            for h in rec["cycle_history"]:
-                st.markdown(f"**Iteration {h['iteration']}:** `{h['action']}` (Status: `{h['status']}`, Latency: `{h.get('duration_sec', 0)}s`)")
-                if "correction" in h and h["correction"].get("corrections"):
-                    for c in h["correction"]["corrections"]:
-                        st.warning(f"Fault: `{c['detected']}`\nSuggestion: {c['suggestion']}")
+# Update state if user typed directly
+st.session_state["requirement_text"] = req_input
 
-        with col_right:
-            st.subheader("3. Device Configuration (Cisco IOS)")
-            st.code(rec["final_config"], language="cisco")
-            if rec.get("saved_in_repo"):
-                st.caption(f"📁 Transferred to ConfigsRepo: `{rec['saved_in_repo']}`")
+col_dev, col_btn = st.columns([1, 2])
+with col_dev:
+    dev_name = st.text_input("Target Device:", value=st.session_state["device_name"], key="dev_input")
+    st.session_state["device_name"] = dev_name
 
+with col_btn:
+    st.write("")  # spacing
+    generate_clicked = st.button("Generate Configuration", type="primary", use_container_width=True)
 
-# ----------------- TAB 2: VALIDATION & ERRORS -----------------
-with tab2:
-    st.subheader("Multi-Tier Configuration Validation (IEEE OJCOMS 2026)")
-    st.markdown("Implements 3-tier validation: **Syntax** (Cisco CLI grammar), **Semantic** (mode/resource bounds), and **Intent** (entity fulfillment).")
+if generate_clicked and st.session_state["requirement_text"].strip():
+    with st.spinner("Processing through SLM closed-loop pipeline..."):
+        res = agent.process_request(st.session_state["requirement_text"], device_name=st.session_state["device_name"])
+        st.session_state["latest_result"] = res
 
-    if "latest_record" in st.session_state:
-        rec = st.session_state["latest_record"]
-        val = rec["last_validation"]
+# Display Results if available
+if "latest_result" in st.session_state:
+    res = st.session_state["latest_result"]
 
-        c_v1, c_v2, c_v3 = st.columns(3)
-        with c_v1:
-            st.metric("Syntax Parse Status", val.get("syntax_status", "UNKNOWN"))
-        with c_v2:
-            st.metric("Syntax Accuracy Score", val.get("syntax_score", 0))
-        with c_v3:
-            st.metric("Goal Accuracy Score", val.get("goal_score", 0))
-
-        if val.get("errors"):
-            st.error(f"Detected {len(val['errors'])} Error(s):")
-            for err in val["errors"]:
-                st.markdown(f"- ❌ `{err}`")
-        else:
-            st.success("✅ Zero syntax or semantic errors detected in approved configuration.")
-
-        if val.get("warnings"):
-            st.warning(f"Warnings ({len(val['warnings'])}):")
-            for w in val["warnings"]:
-                st.markdown(f"- ⚠️ `{w}`")
-
-        # Intent details
-        intent_info = val.get("intent_details", {})
-        if intent_info.get("fulfilled_goals"):
-            st.markdown("#### Intent Fulfillment Verification:")
-            for g in intent_info["fulfilled_goals"]:
-                st.markdown(f"- ✔️ {g}")
-
-        # Correction Recommendations
-        corr = rec.get("last_correction", {})
-        if corr.get("corrections"):
-            st.divider()
-            st.subheader("Automated Error Diagnostics & Correction")
-            for item in corr["corrections"]:
-                st.info(
-                    f"**Detected:** `{item['detected']}`\n\n"
-                    f"**Reason:** {item['reason']}\n\n"
-                    f"**Suggested Correction:** {item['suggestion']}\n\n"
-                    f"**Auto-Correctable:** {'Yes' if item['auto_correctable'] else 'No (requires user guidance)'}"
-                )
+    # Determine status
+    if not res.get("success", True):
+        v_status = "ERROR"
+        status_class = "status-error"
+    elif res.get("verified", False):
+        v_status = "APPROVED (PASSED)"
+        status_class = "status-approved"
     else:
-        st.info("Run a configuration pipeline from Tab 1 to inspect validation results.")
+        v_status = "REFINEMENT NEEDED"
+        status_class = "status-refinement"
 
+    st.divider()
 
-# ----------------- TAB 3: NETWORK SIMULATION -----------------
-with tab3:
-    st.subheader("Discrete Network State Simulator & Verification")
-    st.markdown("Models Cisco IOS device operational tables and runs functional policy assertions.")
+    # Metrics row: Verification Result (3), Detected Category (4), Processing Time (5)
+    m_col1, m_col2, m_col3 = st.columns(3)
+    with m_col1:
+        st.markdown("#### 3. Verification Result")
+        st.markdown(f'<div class="{status_class}">{v_status}</div>', unsafe_allow_html=True)
 
-    if "latest_record" in st.session_state:
-        rec = st.session_state["latest_record"]
-        verif = rec.get("verification_report", {})
-        sim = rec.get("simulation_snapshot", {})
+    with m_col2:
+        st.markdown("#### 4. Detected Category")
+        cat = res.get("detected_category", "UNKNOWN")
+        st.markdown(f'<div class="category-badge">{cat}</div>', unsafe_allow_html=True)
 
-        col_s1, col_s2 = st.columns(2)
-        with col_s1:
-            st.markdown("#### Functional Verification Probes")
-            assertions = verif.get("assertions", [])
-            if assertions:
-                for a in assertions:
-                    icon = "✅" if a["passed"] else "❌"
-                    st.markdown(f"{icon} **{a['test']}**: {a['detail']}")
-            else:
-                st.info("No specific functional assertions required for this scenario.")
+    with m_col3:
+        st.markdown("#### 5. Processing Time")
+        duration = res.get("total_duration_sec", 0.0)
+        st.metric(label="Duration", value=f"{duration}s")
 
-        with col_s2:
-            st.markdown("#### Simulated Device Operational State")
-            if sim:
-                st.markdown("**VLAN Database:**")
-                st.json(sim.get("vlan_database", {}))
-                st.markdown("**Configured Interfaces:**")
-                st.json(sim.get("interfaces", {}))
-                if sim.get("routing_table"):
-                    st.markdown("**Routing Table:**")
-                    st.json(sim.get("routing_table", []))
+    # Section 2: Generated Configuration (Cisco IOS) with Copy button
+    st.markdown("### 2. Generated Configuration")
+    st.code(res.get("final_config", "! No config"), language="cisco")
 
-        st.divider()
-        st.subheader("Cisco Packet Tracer Automation Integration")
-        pt_exp = rec.get("packet_tracer_export", {})
-        if pt_exp and "txt_path" in pt_exp:
-            st.success("Configuration exported for Cisco Packet Tracer / GNS3!")
-            st.text(pt_exp.get("instructions", ""))
-            
-            with open(pt_exp["txt_path"], "r", encoding="utf-8") as f:
-                st.download_button(
-                    "📥 Download Packet Tracer Script (.txt)",
-                    data=f.read(),
-                    file_name=os.path.basename(pt_exp["txt_path"]),
-                    mime="text/plain"
-                )
-    else:
-        st.info("Run a configuration from Tab 1 to trigger network state simulation.")
-
-
-# ----------------- TAB 4: EVALUATION BENCHMARK -----------------
-with tab4:
-    st.subheader("150-Scenario Research Benchmark & Metrics")
-    st.markdown("Computes exact IEEE OJCOMS 2026 Equations (1)-(9): Syntax Accuracy, Goal Accuracy, Translation Latency, and Complexity Score.")
-
-    col_bench, col_bench_stats = st.columns([1, 2])
-    with col_bench:
-        sample_count = st.slider("Number of benchmark scenarios to evaluate:", 5, 150, 20, step=5)
-        run_bench_btn = st.button("Run Benchmark Evaluation", type="primary")
-
-    if run_bench_btn:
-        with st.spinner(f"Evaluating {sample_count} benchmark scenarios..."):
-            evaluator = BenchmarkEvaluator(agent=agent)
-            report = evaluator.run_benchmark(sample_limit=sample_count)
-            st.session_state["bench_report"] = report
-
-    if "bench_report" in st.session_state:
-        rep = st.session_state["bench_report"]
-        
-        m1, m2, m3, m4 = st.columns(4)
-        m1.metric("Syntax Correctness", f"{rep['syntax_accuracy']['correct_pct']}%")
-        m2.metric("Goal Accuracy", f"{rep['goal_accuracy']['correct_pct']}%")
-        m3.metric("Average Latency", f"{rep['average_latency_sec']}s")
-        m4.metric("Mean Complexity", f"{rep['mean_complexity_score']}")
-
-        st.markdown("#### Evaluation Results Table (Sample)")
-        df = pd.DataFrame(rep["individual_results"])
-        st.dataframe(df[["benchmark_id", "category", "syntax_score", "goal_score", "duration_sec", "complexity_score", "verified"]].head(25), use_container_width=True)
-
-
-# ----------------- TAB 5: KNOWLEDGE BASE -----------------
-with tab5:
-    st.subheader("Networking Domain Knowledge Base")
-    st.markdown("Ground-truth context for Cisco IOS XE command validation, reserved entities, and subnet rules.")
-
-    kb_tab1, kb_tab2, kb_tab3 = st.tabs(["Supported Commands", "Networking Rules", "Typo Dictionary"])
+    # Section 5: Processing Information
+    st.markdown("### 5. Processing Information")
+    if res.get("saved_in_repo"):
+        st.info(f"**Configuration Output Location:** `{res['saved_in_repo']}`")
     
-    with kb_tab1:
-        st.json(kb.commands_data.get("commands", []))
+    pt_export = res.get("packet_tracer_export", {})
+    if isinstance(pt_export, dict) and pt_export.get("txt_path"):
+        st.success(f"**Packet Tracer Export Location:** `{pt_export['txt_path']}`")
 
-    with kb_tab2:
-        st.markdown("**Reserved VLANs:**")
-        st.json(kb.rules_data.get("vlan_rules", {}).get("reserved_vlans", {}))
-        st.markdown("**Subnet CIDR Table:**")
-        st.json(kb.rules_data.get("cidr_to_masks", {}))
-
-    with kb_tab3:
-        st.markdown("**Auto-Correctable CLI Typo Mappings:**")
-        st.json(kb.rules_data.get("typo_dictionary", {}))
+# Section: System Flow (Visual Flow at bottom)
+st.divider()
+st.markdown("### System Flow")
+st.markdown("""
+<div style="display: flex; flex-direction: column; align-items: center; max-width: 600px; margin: 0 auto;">
+    <div class="flow-box" style="width: 100%;">Natural Language Requirement</div>
+    <div class="flow-arrow">&darr;</div>
+    <div class="flow-box" style="width: 100%;">Intent Detection</div>
+    <div class="flow-arrow">&darr;</div>
+    <div class="flow-box" style="width: 100%;">Configuration Generation</div>
+    <div class="flow-arrow">&darr;</div>
+    <div class="flow-box" style="width: 100%;">Verification</div>
+    <div class="flow-arrow">&darr;</div>
+    <div class="flow-box" style="width: 100%;">Cisco IOS Configuration</div>
+</div>
+""", unsafe_allow_html=True)

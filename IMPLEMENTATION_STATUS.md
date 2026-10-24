@@ -18,8 +18,8 @@ This document provides a truthful, real-time record of the implementation and ve
 | **Simulation** | IMPLEMENTED | YES | `simulation/network_simulator.py`, Cisco IOS state machine simulator |
 | **Verification** | IMPLEMENTED | YES | `verification/verifier.py`, functional policy and port assertions |
 | **Evaluation** | IMPLEMENTED | YES | `evaluation/evaluator.py`, Equations (1)-(9) from IEEE 2026 paper |
-| **UI** | IMPLEMENTED | YES | `app/ui.py`, interactive 5-tab Streamlit dashboard |
-| **Tests** | IMPLEMENTED | YES | `tests/test_pipeline.py`, 12/12 automated pytest cases PASSED |
+| **UI** | IMPLEMENTED | YES | Web interface (`app/server.py`, `app/static/`) & Streamlit dashboard (`app/ui.py`) |
+| **Tests** | IMPLEMENTED | YES | `tests/test_pipeline.py`, `tests/test_web_ui.py`, 16/16 automated pytest cases PASSED |
 
 ---
 *Verified Status: 100% Core Pipeline Implemented and Tested across all 15 components.*

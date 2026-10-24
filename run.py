@@ -20,7 +20,9 @@ def main():
     parser = argparse.ArgumentParser(
         description="SLM-Based Intelligent Network Configuration (IEEE OJCOMS 2026)"
     )
-    parser.add_argument("--ui", action="store_true", help="Launch Streamlit Web Dashboard")
+    parser.add_argument("--ui", action="store_true", help="Launch Web Interface")
+    parser.add_argument("--port", type=int, default=5000, help="Port for Web Interface (default: 5000)")
+    parser.add_argument("--streamlit", action="store_true", help="Launch Streamlit Dashboard")
     parser.add_argument("--cli", action="store_true", help="Run interactive CLI pipeline")
     parser.add_argument("--query", type=str, default=None, help="Input requirement text for CLI mode")
     parser.add_argument("--device", type=str, default="Switch1", help="Target device hostname")
@@ -31,6 +33,12 @@ def main():
     args = parser.parse_args()
 
     if args.ui:
+        print("Launching SLM-Based Intelligent Network Configuration Web Interface...")
+        from app.server import run_server
+        run_server(port=args.port, host="127.0.0.1")
+        return
+
+    if args.streamlit:
         print("Launching SLM NetConfig Streamlit Dashboard...")
         ui_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "app", "ui.py")
         subprocess.run([sys.executable, "-m", "streamlit", "run", ui_path])
