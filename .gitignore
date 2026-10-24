@@ -38,11 +38,12 @@ training/checkpoints/
 *.bin
 *.pt
 
-# Streamlit / IDE
+# Streamlit / IDE / Deployment
 .streamlit/secrets.toml
 .vscode/
 .idea/
 *.swp
+.netlify/
 
 # Testing & Coverage
 .pytest_cache/
