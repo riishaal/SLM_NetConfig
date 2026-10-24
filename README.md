@@ -1,296 +1,292 @@
-# SLM-Based Intelligent Network Configuration
+# SLM NetConfig
 
-**Department of Computer Science & Engineering, MEA Engineering College**  
-**Group Number:** 11  
-- MEA23CS060: Muhammed Rishal K  
-- MEA23CS062: Muhammed Shahil K  
-- MEA23CS076: Rifa  
-- MEA23CS078: Riza Parveen T  
-
-**Project Guide:** Prof. Nusna Khalid CK  
-**Primary Reference:** *"Network Self-Configuration Based on Fine-Tuned Small Language Models"*, IEEE Open Journal of the Communications Society (OJCOMS), Vol. 7, 2026.
+> **Autonomous Network Configuration via Small Language Models with Closed-Loop Verification**  
+> Grounded in research from *"Network Self-Configuration Based on Fine-Tuned Small Language Models"*, IEEE Open Journal of the Communications Society (OJCOMS), Vol. 7, 2026.
 
 ---
 
-## 1. Project Overview
+## 1. Overview
 
-Modern enterprise and cloud networks require frequent and intricate device configurations. Manual configuration via Command Line Interfaces (CLI) is time-consuming, requires specialized vendor expertise, and is highly prone to human misconfigurations—the primary cause of network outages and security vulnerabilities.
+Enterprise and datacenter network management demands precise, frequent, and syntax-critical device configuration. Manual Command-Line Interface (CLI) configuration is labor-intensive, vendor-dependent, and prone to human errors—a leading contributor to enterprise network downtime and security policy violations.
 
-While Large Language Models (LLMs) have shown capability in natural language translation, they pose substantial barriers: high computational and memory requirements, slow translation latency, unpredictable hallucinations of invalid CLI keywords, and security/privacy risks associated with sending confidential network topologies to external cloud APIs.
+While general-purpose Large Language Models (LLMs) can generate code, deploying them directly for network administration introduces major challenges: high translation latencies (often minutes per topology), steep computational costs, hallucinations of non-existent CLI commands, and serious data privacy risks associated with transmitting proprietary network topologies over public cloud APIs.
 
-**SLM-Based Intelligent Network Configuration** introduces a lightweight, privacy-preserving, on-premise framework that leverages a Fine-Tuned Small Language Model (SLM) integrated with an **Agentic Closed-Loop Verification Pipeline**:
-- Translates natural language requirements into vendor-specific Cisco IOS XE configurations.
-- Employs a structured 3-prompt strategy: **Requirement Classifier**, **Steps Generator**, and **Configuration Generator**.
-- Executes **3-tier automated validation** (Syntax, Semantics, and User Intent).
-- Performs deterministic **Error Detection and Auto-Correction/Suggestion**.
-- Simulates network control/data plane states via a discrete **Network State Simulator**.
-- Provides seamless export for **Cisco Packet Tracer** and **GNS3** demonstration.
-- Evaluates performance using rigorous mathematical metrics (Syntax Accuracy, Goal Accuracy, Translation Latency, and Complexity Scores).
+**SLM NetConfig** provides an on-premise, privacy-preserving, and lightweight alternative. By integrating a fine-tuned Small Language Model (SLM) with an autonomous **Agentic Closed-Loop Verification Pipeline**, the system translates natural language administrative requirements into validated Cisco IOS XE configurations, catches syntax and semantic violations before deployment, and simulates device states in sub-second runtimes.
 
 ---
 
-## 2. Complete System Architecture
+## 2. Key Features
 
-```
-User Natural Language Input (Requirement / Question)
-                       │
-                       ▼
-         MODULE 2: AGENT / CONTROLLER
-  ┌──────────────────────────────────────────────────┐
-  │  Requirement Loader  ──>  Prompt Manager         │
-  │          ▲                        │              │
-  │          │ (Refinement Loop)      ▼              │
-  │  Execution Controller <──  Result Logger         │
-  └────────────────────────┬─────────────────────────┘
-                           │
-       ┌───────────────────┼───────────────────┐
-       ▼                   ▼                   ▼
- MODULE 3: KB        MODULE 5: SLM       MODULE 7: CONFIG
-- Cisco CLI Specs   - Llama-3.2-1B      - Cisco IOS XE
-- CIDR Math Rules   - Qwen2.5-Coder     - Device Boundaries
-- Reserved VLANs    - 3-Prompt Design   - Multi-device (~~~)
-       │                   │                   │
-       └───────────────────┼───────────────────┘
-                           │
-                           ▼
-             MODULE 8: CONFIG VALIDATION
-             ┌─────────────────────────┐
-             │ Tier 1: Syntax (Batfish)│
-             │ Tier 2: Semantic Bounds │
-             │ Tier 3: Intent Fulfill  │
-             └─────────────┬───────────┘
-                           │
-             ┌─────────────┴─────────────┐
-             ▼                           ▼
-       [Errors Found]             [Status: PASSED]
-             │                           │
-             ▼                           ▼
-   MODULE 9 & 10: ERROR        MODULE 11: SIMULATOR
-    DETECTION & ADVICE          - VLAN State DB
-- Typo auto-fix ('acces')       - Interface IP Table
-- Reserved VLAN check           - Routing / OSPF State
-- Feedback to Agent loop        - ACL Packet Filter Walk
-                                         │
-                                         ▼
-                               MODULE 12: VERIFIER
-                                - Functional Assertions
-                                - Packet Tracer Export
-                                         │
-                                         ▼
-                                MODULE 13: EVALUATOR
-                                - Syntax Accuracy Eq (2)
-                                - Goal Accuracy Eq (4)
-                                - Complexity Score Eq (7)
-                                         │
-                                         ▼
-                              MODULE 14: STREAMLIT UI
+- **Natural Language Entity Extraction:** Automatically extracts intent types, VLAN IDs, interface names, IPv4 addresses, subnet masks, OSPF areas, and Access Control List (ACL) parameters from plain English (`app/input_handler.py`).
+- **3-Prompt SLM Reasoning Architecture:**
+  - *Requirement Classifier Prompt:* Accurately identifies intent category (VLAN, VLAN Trunking, IP Addressing, Static Routing, OSPF Routing, DHCP, or Security ACL).
+  - *Intermediate Steps Decomposition:* Breaks complex, multiplex administrative requirements into ordered configuration subtasks prior to CLI generation.
+  - *Configuration Generator:* Formats deterministic, vendor-specific Cisco IOS XE command blocks without conversational filler.
+- **Dual Execution Modes:**
+  - *Transformer / LoRA Mode:* Supports local or cloud execution of `Qwen/Qwen2.5-Coder-1.5B-Instruct` or `meta-llama/Llama-3.2-1B` with Parameter-Efficient Fine-Tuning (PEFT) adapters (`training/lora_train.py`).
+  - *Domain-Grounded Fallback Engine:* Provides an offline, rule-grounded reasoning engine enabling sub-second response times without requiring GPU hardware or large model downloads.
+- **3-Tier Automated Validation:**
+  - *Tier 1 (Syntax):* Validates commands against Cisco IOS XE grammar, command tree hierarchies, and keyword specifications.
+  - *Tier 2 (Semantics):* Enforces network domain boundaries (e.g., catching reserved VLANs `1`, `1002`–`1005`, valid CIDR ranges, and interface types).
+  - *Tier 3 (Intent):* Verifies that the generated configuration completely satisfies all constraints of the input requirement.
+- **Error Detection & Auto-Correction:** Catches common CLI typos (e.g., `acces` $\rightarrow$ `access`), flags erroneous line numbers, and attempts safe, deterministic correction before re-prompting.
+- **Discrete Network State Simulator:** Maintains in-memory device state machines (VLAN database, interface status table, IP routing table, and ACL packet filters) to verify functional correctness (`simulation/network_simulator.py`).
+- **Cisco Packet Tracer Automation:** Automatically exports ready-to-paste scripts (`.ios` and `.txt`) with execution instructions for Cisco Packet Tracer and GNS3 (`output/PacketTracer_Exports/`).
+- **Multiple Operational Interfaces:** Provides a modern single-page web dashboard, an interactive Streamlit research app, and a scriptable CLI.
+
+---
+
+## 3. System Architecture
+
+The following diagram illustrates the closed-loop perception-reasoning-action-verification cycle implemented by the orchestrating Agent:
+
+```mermaid
+flowchart TD
+    NL["Natural Language Requirement"] --> IH["Input Handler (Entity Extraction)"]
+    IH --> AG["Agent Controller (Closed-Loop)"]
+    
+    subgraph SLM ["SLM Reasoning Engine (3-Prompt Strategy)"]
+        CL["1. Intent Classifier Prompt"] --> ST["2. Intermediate Steps Decomposition"]
+        ST --> CG["3. Cisco IOS Configuration Generator"]
+    end
+    
+    AG --> SLM
+    SLM --> VAL["3-Tier Validator (Syntax, Semantics, Intent)"]
+    
+    VAL -- "Violations Detected" --> COR["Error Corrector (Diagnostics & Auto-Fix)"]
+    COR -- "Refinement Feedback Loop" --> AG
+    
+    VAL -- "Validation Passed" --> SIM["Network Simulator (State Machine)"]
+    SIM --> VER["Behavioral Verifier (Functional Assertions)"]
+    VER --> OUT["ConfigsRepo & Cisco Packet Tracer Scripts"]
 ```
 
 ---
 
-## 3. Technology Stack
+## 4. Technology Stack
 
-- **Core Language:** Python 3.10.10
-- **Deep Learning & Fine-Tuning:** PyTorch, Hugging Face `transformers`, `peft` (LoRA), `accelerate`, `datasets`
-- **Network Configuration Parsing:** `ciscoconfparse2`
-- **Web Interface & Dashboard:** Python HTTP REST server (`app/server.py`), HTML5/CSS3/JS, and `streamlit`
-- **Data & Visualization:** `pandas`, `numpy`, `matplotlib`, `seaborn`, `rich`
-- **Automated Testing:** `pytest` (16/16 Automated Verification Scenarios)
-- **Network Emulation / Target:** Cisco Packet Tracer / GNS3 script integration
+| Category | Technologies / Libraries |
+| :--- | :--- |
+| **Core Language** | Python 3.10+ |
+| **Machine Learning & Fine-Tuning** | PyTorch, Hugging Face `transformers`, `peft` (LoRA), `accelerate`, `datasets` |
+| **Network Configuration Parsing** | `ciscoconfparse2` |
+| **Web & Dashboard Interfaces** | Python `http.server` REST API (`app/server.py`), HTML5, CSS3, JavaScript, `streamlit` |
+| **Data & Metrics Analysis** | `pandas`, `numpy`, `matplotlib`, `seaborn`, `rich` |
+| **Automated Testing** | `pytest` (16 automated unit & integration test cases) |
+| **Network Emulation Targets** | Cisco Packet Tracer, GNS3 |
 
 ---
 
-## 4. Project Directory Structure
+## 5. Project Structure
 
 ```
-SLM/
+SLM_NetConfig/
 ├── app/
-│   ├── __init__.py
-│   ├── input_handler.py        # Module 1: Natural language entity extraction & intake
-│   ├── server.py               # Module 14: REST API server for web interface
-│   ├── static/                 # Web interface frontend (HTML5, CSS3, JS)
-│   └── ui.py                   # Streamlit dashboard interface
+│   ├── input_handler.py        # Natural language parsing & entity extraction
+│   ├── server.py               # Lightweight HTTP REST server backend
+│   ├── static/                 # Production web dashboard (HTML, CSS, JS)
+│   └── ui.py                   # Multi-tab Streamlit evaluation dashboard
 ├── controller/
-│   ├── __init__.py
-│   └── agent.py                # Module 2: 4-component Agent orchestrator with closed-loop
+│   └── agent.py                # 4-component orchestrator with closed-loop cycle
 ├── knowledge_base/
-│   ├── __init__.py
-│   ├── cisco_ios_commands.json # Cisco command specifications & allowed parameter ranges
-│   ├── networking_rules.json   # Subnet masks, reserved VLANs, and typo dictionary
+│   ├── cisco_ios_commands.json # Cisco command specifications & parameters
+│   ├── networking_rules.json   # Subnet rules, reserved VLANs, and typo map
 │   ├── config_patterns.json    # Standard configuration AST patterns
-│   └── kb_manager.py           # Module 3: Knowledge Base retrieval and grounding engine
+│   └── kb_manager.py           # Grounding retrieval engine
 ├── dataset/
-│   ├── __init__.py
-│   ├── build_dataset.py        # Module 4: 7-stage dataset engineering pipeline
-│   ├── dataset_loader.py       # Dataset access utility for train, val, and benchmark sets
-│   ├── train/                  # Declarative & Interrogative training JSONL files
-│   ├── validation/             # Validation split
-│   └── test/                   # 150-scenario benchmark test dataset
+│   ├── build_dataset.py        # 7-stage dataset engineering pipeline
+│   ├── dataset_loader.py       # Dataset access loader for train/val/test splits
+│   ├── train/                  # Declarative & interrogative training datasets
+│   ├── validation/             # Validation dataset
+│   └── test/                   # 150-scenario benchmark evaluation dataset
 ├── models/
-│   ├── __init__.py
-│   └── slm_engine.py           # Module 5: SLM 3-prompt engine (Classifier, Steps, CLI)
+│   └── slm_engine.py           # 3-prompt SLM engine (Transformer & Fallback)
 ├── training/
-│   ├── __init__.py
-│   ├── lora_train.py           # Module 6: PEFT LoRA training pipeline (r=64, alpha=16)
-│   └── SLM_NetConfig_Colab_FineTuning.ipynb # Google Colab Tesla T4 training notebook
+│   ├── lora_train.py           # PEFT / LoRA fine-tuning script
+│   └── SLM_NetConfig_Colab_FineTuning.ipynb # Google Colab T4 training notebook
 ├── generation/
-│   ├── __init__.py
-│   └── config_generator.py     # Module 7: Multi-device Cisco CLI formatter
+│   └── config_generator.py     # Multi-device Cisco CLI formatter
 ├── validation/
-│   ├── __init__.py
-│   └── validator.py            # Modules 8 & 9: 3-tier validation (Syntax, Semantics, Intent)
+│   └── validator.py            # 3-tier validation (Syntax, Semantics, Intent)
 ├── correction/
-│   ├── __init__.py
-│   └── error_corrector.py      # Module 10: Auto-fix and suggestion diagnostics
+│   └── error_corrector.py      # Diagnostic explanations & typo auto-fix
 ├── simulation/
-│   ├── __init__.py
-│   ├── network_simulator.py    # Module 11: Discrete Cisco IOS device state machine
-│   └── packet_tracer_exporter.py # Packet Tracer / GNS3 automation script generator
+│   ├── network_simulator.py    # Discrete Cisco IOS state machine simulator
+│   └── packet_tracer_exporter.py # Automation script exporter for Packet Tracer
 ├── verification/
-│   ├── __init__.py
-│   └── verifier.py             # Module 12: Behavioral & functional policy assertions
+│   └── verifier.py             # Behavioral assertions against simulated state
 ├── evaluation/
-│   ├── __init__.py
-│   └── evaluator.py            # Module 13: Mathematical evaluation engine (Eq 1-9)
+│   └── evaluator.py            # IEEE OJCOMS 2026 mathematical evaluation engine
 ├── tests/
-│   ├── __init__.py
-│   ├── test_pipeline.py        # Automated core pipeline test suite
-│   ├── test_web_ui.py          # Web UI & server API integration tests
-│   └── generate_test_report.py # Generates docs/TEST_RESULTS.md
+│   ├── test_pipeline.py        # Automated test suite for core pipeline
+│   ├── test_web_ui.py          # Integration test suite for web UI & server
+│   └── generate_test_report.py # Automated test report generator
 ├── output/
-│   ├── ConfigsRepo/            # Approved, verified device configurations
+│   ├── ConfigsRepo/            # Verified, approved device configurations
 │   ├── PacketTracer_Exports/   # Ready-to-paste Cisco Packet Tracer scripts
-│   ├── agent_execution_history.jsonl
-│   └── benchmark_evaluation_report.json
-├── docs/
-│   └── TEST_RESULTS.md         # Documented 12-test execution table
-├── requirements.txt
-├── IMPLEMENTATION_STATUS.md    # Real-time truthful status tracker
-├── run.py                      # Master CLI and UI entrypoint
+│   └── benchmark_evaluation_report.json # Benchmark test results
+├── netlify.toml                # Netlify deployment configuration
+├── requirements.txt            # Project dependencies
+├── run.py                      # Master CLI and application launcher
 └── README.md
 ```
 
 ---
 
-## 5. Installation and Setup Guide
+## 6. Prerequisites
 
-### Step 1: Clone / Navigate to Workspace
-```powershell
-cd "c:\Users\MUHAMMED RISHAL K\OneDrive\Desktop\SLM"
-```
-
-### Step 2: Install Required Dependencies
-All dependencies are recorded in `requirements.txt`:
-```powershell
-python -m pip install -r requirements.txt
-```
-
-### Step 3: Verify the Installation
-Run the automated test suite across all modules and web UI handlers:
-```powershell
-python -m pytest tests/ -v
-```
-*Expected Output:* `16 passed in < 1.5s`.
+- **Python:** Version 3.10 or higher.
+- **Git:** Version 2.30 or higher.
+- **Operating System:** Windows, macOS, or Linux.
+- **Hardware (Optional for Model Training):** A CUDA-compatible GPU with 8 GB+ VRAM (or Google Colab Free Tier T4 GPU) is recommended if training or fine-tuning transformer weights via LoRA. The standard configuration and verification pipeline runs entirely on standard CPUs.
 
 ---
 
-## 6. How to Run the System
+## 7. Installation and Setup
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/riishaal/SLM_NetConfig.git
+cd SLM_NetConfig
+```
+
+### 2. Set Up a Virtual Environment
+**On Windows (PowerShell):**
+```powershell
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+```
+
+**On Linux / macOS (bash/zsh):**
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+### 3. Install Dependencies
+```bash
+pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+### 4. Verify Installation
+Run the automated test suite to confirm all 16 test cases pass:
+```bash
+pytest tests/ -v
+```
+*Expected result:* `16 passed in < 1.5s`.
+
+---
+
+## 8. Configuration
+
+- **Execution Engine Toggle (`load_model_weights`):**
+  - `load_model_weights=False` (Default): Uses the built-in domain-grounded SLM reasoning engine. Operates with sub-second latencies and zero model weight downloads.
+  - `load_model_weights=True`: Initializes Hugging Face transformer weights (e.g., `Qwen/Qwen2.5-Coder-1.5B-Instruct`) and attaches PEFT LoRA adapters from `training/checkpoints/` if present.
+- **Web Server Port:** Configurable via the `--port` argument when launching the web interface (defaults to `5000`).
+- **Zero Credentials Policy:** The application runs completely on-premise without requiring third-party API keys, tokens, or external cloud services.
+
+---
+
+## 9. Usage
 
 ### Option A: Web Interface (Recommended)
-Launch the lightweight web application server:
-```powershell
-python run.py --ui
+Launch the lightweight web application:
+```bash
+python run.py --ui --port 5000
 ```
-*The web interface will open at `http://127.0.0.1:5000` with the natural language configuration workspace, real-time validation badges, and Packet Tracer export.*
+Open your browser to `http://127.0.0.1:5000`. The interface provides:
+- Natural language requirement input and target device selector.
+- Preset scenario shortcuts (VLAN declaration, IP addressing, Trunking, OSPF).
+- Live verification status badges (`APPROVED (PASSED)`, `REFINEMENT NEEDED`, or `ERROR`).
+- Formatted Cisco IOS XE configuration with one-click copy.
+- Output location paths and visual architecture flow diagram.
 
 ### Option B: Streamlit Dashboard
-Launch the multi-tab interactive Streamlit dashboard:
-```powershell
+Launch the multi-tab Streamlit dashboard:
+```bash
 python run.py --streamlit
 ```
-or directly:
-```powershell
-python -m streamlit run app/ui.py
-```
-*The dashboard will open at `http://localhost:8501` featuring:*
-1. **Configuration Pipeline Tab:** Real-time intent translation, decomposed steps, and generated Cisco CLI.
-2. **Validation & Errors Tab:** Syntax status (`PASSED`, `PARTIALLY_UNRECOGNIZED`), semantic bounds, and auto-fix suggestions.
-3. **Simulation Tab:** Virtual device state (VLAN DB, Interface status, Routing table) and downloadable Packet Tracer scripts.
-4. **Evaluation Tab:** Run the 150-scenario benchmark and compute IEEE 2026 accuracy and complexity metrics.
-5. **Knowledge Base Tab:** Inspect Cisco commands, RFC 1918 subnets, and typo dictionaries.
+*Accessible at `http://localhost:8501`.*
 
-### Option C: Command Line Interface (CLI)
-Execute an immediate query via terminal:
-```powershell
-python run.py --cli --query "Create VLAN 10 named HR and assign FastEthernet0/1 to VLAN 10."
+### Option C: Command-Line Interface (CLI)
+Execute an immediate query directly in the terminal:
+```bash
+python run.py --cli --query "Create VLAN 20 named Accounts and assign GigabitEthernet0/1 to VLAN 20."
 ```
 
-### Option D: Run 150-Scenario Benchmark Evaluation
-Evaluate the framework using the mathematical formulas from the IEEE 2026 paper:
-```powershell
+### Option D: Cisco Packet Tracer Integration
+1. Generate a configuration using either the Web UI or CLI.
+2. Locate the generated automation script in `output/PacketTracer_Exports/` (e.g., `Switch1_VLAN_Switch1_pt_script.txt`).
+3. Open **Cisco Packet Tracer**, place a **Catalyst 2960 Switch** (or 2911 Router), and navigate to the **CLI** tab.
+4. Paste the script contents into the console.
+5. Execute verification commands such as `show vlan brief` or `show ip interface brief` to verify the state on the device.
+
+---
+
+## 10. Evaluation and Testing
+
+### Automated Test Suite
+The project includes automated unit and integration tests covering input handling, agent closed-loop cycles, validation rules, typo auto-correction, and web API endpoints:
+```bash
+pytest tests/ -v
+```
+
+### 150-Scenario Benchmark Evaluation
+The framework includes an evaluation engine implementing the mathematical metrics specified in Section VII-B of the IEEE OJCOMS 2026 paper:
+```bash
 python run.py --eval --samples 20
 ```
+Key metrics computed against `dataset/test/test_benchmark_150.jsonl`:
+- **Syntax Accuracy (Eq. 2 & 3):** Strict conformance to Cisco IOS grammar rules.
+- **Goal Accuracy (Eq. 4):** Degree of fulfillment of input administrative requirements.
+- **Translation Latency (Eq. 5 & 6):** Duration required for classification, steps decomposition, and synthesis.
+- **Complexity Score (Eq. 7, 8 & 9):** Normalized metric combining requirement length, generated command length, and translation time.
 
 ---
 
-## 7. Mathematical Evaluation Metrics (IEEE OJCOMS 2026)
+## 11. Limitations
 
-Our evaluation strictly adheres to the formulas defined in Section VII-B of the base paper:
-
-1. **Syntax Accuracy (Equations 2 & 3):**
-   $$\text{Syntax Accuracy} = \begin{cases} 1 & \text{if } \forall l_i, \text{valid}(l_i) = 1 \\ 0 & \text{if } \exists l_i : \text{valid}(l_i) = 0 \\ -1 & \text{if } \exists l_i : \text{valid}(l_i) = -1 \end{cases}$$
-   Where $\text{valid}(l_i) = 1$ if command matches Cisco IOS XE grammar, $0$ if incomplete, and $-1$ if unrecognized.
-
-2. **Goal Accuracy (Equation 4):**
-   $$\text{Goal Accuracy} = \begin{cases} 1 & \text{if } C \text{ fully satisfies } R \\ 0 & \text{if } C \text{ partially satisfies } R \\ -1 & \text{if } C \text{ fails to satisfy } R \end{cases}$$
-
-3. **Translation Latency (Equations 5 & 6):**
-   $$\text{total\_dura\_time} = \frac{T_{\text{pci}} + T_{\text{gcc}}}{60}$$
-   Normalized via min-max scaling to enable fair comparison across topologies.
-
-4. **Complexity Score (Equations 7, 8 & 9):**
-   $$\text{complexity\_score} = \frac{\text{norm\_total\_len} + \text{norm\_total\_dura\_time}}{2}$$
-   Where $\text{total\_len} = \text{trans\_len} + \text{config\_len}$.
+- **Vendor Scope:** Currently optimized for Cisco IOS XE syntax. Support for alternative network operating systems (e.g., Juniper Junos OS, Arista EOS) is not yet implemented.
+- **Hardware Requirements for Full Transformer Weights:** Running the full 1.5B/1B parameter transformer locally requires substantial GPU VRAM (~4–8 GB). On standard development environments without GPUs, the built-in domain-grounded engine is utilized.
+- **Simulator Fidelity:** The discrete network simulator models control-plane states (VLAN tables, IP routes, ACL filter chains) but does not emulate hardware packet switching rates, ASIC pipelines, or complex dynamic protocols such as BGP, MPLS, or VXLAN.
 
 ---
 
-## 8. Cisco Packet Tracer Demonstration Procedure
+## 12. Future Improvements
 
-1. Run the system via the Web UI (`python run.py --ui`) or CLI.
-2. Select or enter any scenario (e.g., *VLAN 10 HR & VLAN 20 Accounts*).
-3. The system automatically creates a ready-to-run automation script in `output/PacketTracer_Exports/`.
-4. Open **Cisco Packet Tracer**.
-5. Drag and drop a **Cisco Catalyst 2960 Switch** (or 2911 Router) onto the workspace.
-6. Click the switch $\rightarrow$ click the **CLI** tab.
-7. Open the generated script (`output/PacketTracer_Exports/..._pt_script.txt`), copy all lines, and paste into the CLI.
-8. Type `show vlan brief` or `show ip interface brief` in Packet Tracer to observe the verified configuration running live!
+- [ ] Add multi-vendor translation support for Juniper Junos OS and Arista EOS.
+- [ ] Implement direct device synchronization via Netmiko, RESTCONF, and NETCONF.
+- [ ] Incorporate 4-bit AWQ and GGUF quantization for edge deployment on low-power network management appliances.
+- [ ] Expand the benchmark test dataset to cover complex enterprise topologies and dynamic routing protocols (BGP, EIGRP).
 
 ---
 
-## 9. 50% Review Demonstration Checklist
+## 13. Project Team
 
-During the 50% review, demonstrate the following working sequence:
-- **Demo 1 (Single VLAN):** Input `Create VLAN 10 named HR.` $\rightarrow$ Output: `vlan 10`, `name HR`, status APPROVED.
-- **Demo 2 (Dynamic Adaptation):** Input `Create VLAN 20 named Accounts and assign Fa0/1 to VLAN 20.` $\rightarrow$ Output dynamically adapts to VLAN 20, Accounts, and Fa0/1.
-- **Demo 3 (Error Detection):** Input `switchport mode acces` $\rightarrow$ System catches the syntax typo, flags line number, and marks FAILED.
-- **Demo 4 (Error Correction):** System explains why `acces` is invalid and suggests `switchport mode access`, auto-correcting the configuration.
-- **Demo 5 (Architecture & Test Evidence):** Show `IMPLEMENTATION_STATUS.md` and `docs/TEST_RESULTS.md` demonstrating that 12/12 automated test cases pass.
+**Department of Computer Science & Engineering, MEA Engineering College**
+
+- **Muhammed Rishal K**
+- **Muhammed Shahil K**
+- **Rifa**
+- **Riza Parveen T**
+
+**Project Guide:**  
+- **Prof. Nusna Khalid CK** (Assistant Professor, Department of CSE)
 
 ---
 
-## 10. Viva Questions and Answers
+## 14. License
 
-**Q1: Why use a Small Language Model (SLM) instead of a large LLM like GPT-4?**  
-*Answer:* Network configurations contain sensitive topological data, IP subnets, and credentials. Sending them to external cloud LLMs violates enterprise privacy. Furthermore, large LLMs require cloud GPUs, introduce high latency (3-20 minutes in base paper benchmarks), and frequently hallucinate non-existent CLI keywords. A fine-tuned SLM (e.g., Llama-3.2-1B / Qwen2.5-Coder-1.5B) runs completely on-premise, executes in $< 1.5$ seconds, and generates concise, deterministic commands.
+This project is developed for academic evaluation and research purposes. Licensing terms can be designated upon formal release.
 
-**Q2: What is the 3-prompt strategy implemented in your agent?**  
-*Answer:* As defined in Section IV-B of our IEEE 2026 base paper:
-1. *Requirement Classifier Prompt:* Categorizes intent (VLAN, OSPF, ACL, DHCP, etc.).
-2. *Steps Generator Prompt:* Decomposes multiplex requirements into ordered subtasks (e.g., interface setup, mode selection, IP assignment).
-3. *Configuration Generator Prompt:* Positions the model as a virtual network administrator outputting strict Cisco IOS CLI without conversational filler, using `~~~` as device delimiters.
+---
 
-**Q3: How does the closed-loop verification cycle work?**  
-*Answer:* Rather than outputting unverified code, the Agent passes generated CLI to the 3-tier Verifier. If syntax or semantic violations occur, the Verifier generates a structured feedback report. The Agent uses this report to either execute safe deterministic auto-correction or re-prompt the model. Only configurations reaching `PASSED` status are stored in `ConfigsRepo`.
+## 15. References & Acknowledgments
 
-**Q4: How do you evaluate the system?**  
-*Answer:* We evaluate using the 4 mathematical metrics from Section VII-B of the base paper: Syntax Accuracy, Goal Accuracy, Translation Latency, and Complexity Score across an isolated 150-scenario benchmark dataset.
+1. **Primary Reference Paper:**  
+   *"Network Self-Configuration Based on Fine-Tuned Small Language Models"*, IEEE Open Journal of the Communications Society (OJCOMS), Vol. 7, 2026.
+2. **Cisco Documentation:**  
+   Cisco IOS XE 17.x Command Reference and Configuration Guides.
+3. **Open-Source Libraries:**  
+   Hugging Face `transformers`, `peft`, `ciscoconfparse2`, and `pytest`.
